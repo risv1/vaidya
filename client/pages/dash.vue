@@ -1,5 +1,4 @@
 <script setup>
-import { ref } from 'vue'
 
 const tabs = [
     { id: 'crops', name: 'Crop Analysis' },
