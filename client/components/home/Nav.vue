@@ -19,7 +19,7 @@ const toggleTheme = () => {
                 <div class="flex items-center space-x-4">
                     <div
                         class="bg-gradient-to-tr from-sky-400 to-blue-600 p-2.5 rounded-xl shadow-lg shadow-sky-500/20">
-                        <IconWind class="w-6 h-6 text-white" />
+                        <Icon name="svg-spinners:wind-toy" class="w-6 h-6 text-white" />
                     </div>
                     <span
                         class="text-xl font-bold bg-gradient-to-r from-sky-400 to-blue-600 bg-clip-text text-transparent">

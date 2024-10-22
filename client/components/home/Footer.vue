@@ -9,9 +9,9 @@
                 <div class="space-y-4">
                     <div class="flex items-center space-x-4">
                         <div class="bg-gradient-to-tr from-sky-400 to-blue-600 p-2.5 rounded-xl shadow-lg shadow-sky-500/20">
-                            <IconWind class="w-6 h-6 text-white" />
+                            <Icon name="svg-spinners:wind-toy" class="w-6 h-6 text-white" />
                         </div>
-                        <span class="text-xl font-bold bg-gradient-to-r from-sky-400 to-blue-600 bg-clip-text text-transparent">WeatherWise</span>
+                        <span class="text-xl font-bold bg-gradient-to-r from-sky-400 to-blue-600 bg-clip-text text-transparent">Vaidya</span>
                     </div>
                     <p class="text-gray-400">
                         Providing cutting-edge weather analytics for sustainable agriculture and renewable energy.
@@ -36,7 +36,7 @@
                 <div class="space-y-4">
                     <h4 class="text-lg font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Contact</h4>
                     <ul class="space-y-2">
-                        <li class="text-gray-600 dark:text-gray-300">Email: contact@weatherwise.com</li>
+                        <li class="text-gray-600 dark:text-gray-300">Email: contact@vaidya.com</li>
                         <li class="text-gray-600 dark:text-gray-300">Phone: (555) 123-4567</li>
                     </ul>
                 </div>
@@ -44,7 +44,7 @@
             
             <div class="border-t border-gray-200 dark:border-gray-700/50 py-8">
                 <p class="text-center text-gray-500 dark:text-gray-400">
-                    © {{ new Date().getFullYear() }} WeatherWise Insights. All rights reserved.
+                    © {{ new Date().getFullYear() }} Vaidya Insights. All rights reserved.
                 </p>
             </div>
         </div>
