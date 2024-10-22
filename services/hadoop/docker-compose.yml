@@ -60,5 +60,5 @@ volumes:
 
 networks:
   default:
-    name: hadoop-spark-net
+    name: hadoop-mq-net
     external: true
