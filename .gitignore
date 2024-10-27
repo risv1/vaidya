@@ -1,4 +1,5 @@
 *.pkl
+*.pt
 
 # python environment
 venv
