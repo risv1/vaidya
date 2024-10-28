@@ -58,6 +58,14 @@ def generate_required_fields(data: IncomingData) -> AQI:
     )
     
     
+def convert_api_to_aqi(api_value):
+    api_min, api_max = 0, 500  
+    aqi_min, aqi_max = 0, 500  
+    
+    aqi_value = ((api_value - api_min) / (api_max - api_min)) * (aqi_max - aqi_min) + aqi_min
+    
+    return round(aqi_value)
+    
 def predict_aqi(data: IncomingData):
     try:
         ml_model = load_model()
@@ -77,6 +85,9 @@ def predict_aqi(data: IncomingData):
             data_dict['traffic_volume']
         ]
         
-        return ml_model.predict([features])[0]
+        api_val = ml_model.predict([features])[0]
+        aqi_val = convert_api_to_aqi(api_val)
+    
+        return aqi_val
     except Exception as e:
         raise Exception(f"Prediction error: {str(e)}")

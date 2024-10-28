@@ -1,3 +1,45 @@
+<script setup lang="ts">
+const loading = ref(true);
+const error = ref<string | null>(null);
+const aqi = ref<number | null>(null);
+
+
+const lat = (12.9 + Math.random() * 0.1).toFixed(4);
+const lon = (80.2 + Math.random() * 0.1).toFixed(4);
+
+const fetchAirQuality = async () => {
+    try {
+        const response = await fetch('http://localhost:8000/air_quality', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                lat,
+                lon,
+            }),
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch air quality data');
+        }
+
+        const data = await response.json();
+        aqi.value = data.aqi;
+
+        loading.value = false;
+    } catch (err) {
+        console.error(err);
+        error.value = err as string;
+    }
+}
+
+onMounted(()=>{
+    fetchAirQuality();
+})
+
+</script>
+
 <template>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div class="p-6 bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl">
@@ -6,7 +48,13 @@
                 <div class="flex items-center justify-between p-4 bg-white/5 rounded-lg">
                     <div>
                         <p class="text-gray-400">Current AQI</p>
-                        <p class="text-3xl font-bold text-green-500">65</p>
+                        <p v-if="!loading" class="text-3xl font-bold"
+                        :class="aqi 
+                        ? aqi < 50 ? 'text-green-500' : aqi < 100 ? 'text-yellow-500' : aqi < 150 ? 'text-orange-500' : 'text-red-500'
+                        : 'text-gray-400'"
+                        >
+                        {{ aqi ?? 'N/A' }}</p>
+                        <p v-else class="text-3xl font-bold text-gray-400">Loading...</p>
                     </div>
                     <div class="text-right">
                         <p class="text-white font-medium">Moderate</p>

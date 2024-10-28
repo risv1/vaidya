@@ -44,7 +44,7 @@ def predict_crop_yield(lat: str, lon: str, temp: float, humidity: float, rainfal
             'crop': rec['crop'],
             'confidence': rec['confidence'],
             'soil_requirements': rec['soil_requirements'],
-            'estimated_price': rec['estimated_price']
+            'estimated_price': rec['estimated_price'] / 50,
         }
         crops_rec.append(new_crop)
 
