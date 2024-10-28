@@ -32,6 +32,10 @@ const gridData = ref({
 const loading = ref(true);
 const error = ref(null);
 
+const { locationData } = useLocation();
+const lat = locationData?.coords.latitude.toFixed(4) ?? '12.9';
+const lon = locationData?.coords.longitude.toFixed(4) ?? '80.2';
+
 const fetchPowerData = async () => {
   try {
     loading.value = true;
@@ -43,8 +47,8 @@ const fetchPowerData = async () => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        lat: "12.9416",
-        lon: "80.2362"
+        lat,
+        lon
       })
     });
 

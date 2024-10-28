@@ -1,18 +1,28 @@
 type Location = { lat: number; lon: number }
 
-export default function useLocation() {
-    const { coords, error } = useGeolocation()
+export function useLocation() {
+    const { coords, locatedAt, error, resume, pause } = useGeolocation()
 
-    const location = useState<Location | null>('location', () => {
-        if (!error.value) {
-            return {
-                lat: coords.value?.latitude || 0,
-                lon: coords.value?.longitude || 0,
-            }
-        } else {
-            return null
-        }
-    })
+    if (error.value) {
+        return { error }
+    }
 
-    return { location }
+    const locationData =
+    {
+        coords: {
+            accuracy: coords.value.accuracy,
+            latitude: coords.value.latitude,
+            longitude: coords.value.longitude,
+            altitude: coords.value.altitude,
+            altitudeAccuracy: coords.value.altitudeAccuracy,
+            heading: coords.value.heading,
+            speed: coords.value.speed,
+        },
+        locatedAt,
+        error: error ? error.value : error,
+    }
+
+    return { locationData, resume, pause }
+
+
 }

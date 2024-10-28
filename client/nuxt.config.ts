@@ -18,4 +18,7 @@ export default defineNuxtConfig({
     fallback: 'light',  
   },
   ssr: true,
+  imports: {
+    dirs: ['./composables']
+  }
 })
