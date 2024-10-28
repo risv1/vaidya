@@ -100,22 +100,3 @@ class CropRecommender:
             
         return recommendations
     
-def save_data():
-    recommender = CropRecommender()
-    recommender.prepare_data() 
-
-    crop_stats = {
-        crop: {
-            'avg_params': avg_stats['avg_params'].tolist(),  
-            'avg_price': avg_stats['avg_price']  
-        }
-        for crop, avg_stats in recommender.crop_stats.items() 
-    }
-
-    with open('crop_stats.txt', 'w') as f:
-        json.dump(crop_stats, f, indent=4)
-
-    print("Crop stats saved successfully!")
-
-if __name__ == '__main__':
-    save_data()

@@ -6,21 +6,6 @@ from utils.crop_model import CropRecommendationModel, CropRecommender
 from utils.gem import gen_pests_and_diseases
 import joblib
 
-owa_api_key = os.getenv('OWA_API_KEY')
-
-def get_weather(lat: str, lon: str):
-    url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={owa_api_key}"
-    res = requests.get(url)
-    data = {
-        'temp': convert_kelvin_to_celsius(res.json()['main']['temp']),
-        'humidity': res.json()['main']['humidity'],
-        'rainfall': res.json()['rain']['1h'] if 'rain' in res.json() else 0
-    }
-    return data
-
-def convert_kelvin_to_celsius(temp: float):
-    return temp - 273.15
-
 def load_model():
     recommender = CropRecommender()
     

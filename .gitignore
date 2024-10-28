@@ -1,5 +1,6 @@
 *.pkl
 *.pt
+crop_stats.txt
 
 # python environment
 venv
