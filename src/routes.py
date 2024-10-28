@@ -6,6 +6,7 @@ from utils.crops import predict_crop_yield
 from utils.owa import convert_kelvin_to_celsius, get_complete_weather
 from utils.wind import WeatherData, predict_power_wind
 from utils.solar import SolarPowerInput, predict_power_solar
+from utils.airq import predict_aqi, IncomingData
 import datetime
 
 router = APIRouter()
@@ -88,6 +89,29 @@ async def power(request: Request):
         return {"error": f"API error: {str(e)}"}
         
 
-@router.get("/air_quality")
-async def health():
+@router.post("/air_quality")
+async def aqi(request: Request):
+    body = await request.json()
+    data = get_complete_weather(body['lat'], body['lon'])
+    
+    try:
+        airq_data = IncomingData(
+            humidity=data['relative_humidity_2_m_above_gnd'],
+            wind_speed=data['wind_speed_10_m_above_gnd'],
+            wind_direction=data['wind_direction_10_m_above_gnd'],
+            dew_point=data['dewpoint_2m'],
+            temperature=data['temperature_2_m_above_gnd'],
+            clouds_all=data['total_cloud_cover_sfc']
+        )
+        
+        pred_aqi = predict_aqi(airq_data)
+    
+        return {
+            "aqi": pred_aqi,
+            "status": "ok"
+        }
+        
+    except Exception as e:
+        return {"error": f"API error: {str(e)}"}
+        
     
