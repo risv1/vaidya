@@ -1,6 +1,8 @@
 *.pkl
 *.pt
 crop_stats.txt
+crop_stats_test_spark.txt
+spark_crop_recommender
 
 # python environment
 venv

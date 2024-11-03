@@ -1,5 +1,4 @@
-<script setup>
-import { ref, onMounted } from 'vue';
+<script setup lang="ts">
 
 const solarData = ref({
   currentOutput: 0,
@@ -30,11 +29,13 @@ const gridData = ref({
 });
 
 const loading = ref(true);
-const error = ref(null);
+const error = ref<string | null>(null);
 
-const { locationData } = useLocation();
-const lat = locationData?.coords.latitude.toFixed(4) ?? '12.9';
-const lon = locationData?.coords.longitude.toFixed(4) ?? '80.2';
+// const lat = (12.9 + Math.random() * 0.1).toFixed(4);
+// const lon = (80.2 + Math.random() * 0.1).toFixed(4);
+
+const lat = 12.8230
+const lon = 80.0444
 
 const fetchPowerData = async () => {
   try {
@@ -61,7 +62,7 @@ const fetchPowerData = async () => {
     if (data?.solar?.predicted_power_kw) {
       const predictedSolarPower = data.solar.predicted_power_kw;
       solarData.value = {
-        currentOutput: (predictedSolarPower / 1000).toFixed(1), 
+        currentOutput: parseFloat((predictedSolarPower / 1000).toFixed(1)), 
         daily: Math.round(predictedSolarPower * 24 / 1000), 
         weekly: Math.round(predictedSolarPower * 24 * 7 / 1000), 
         monthly: Math.round(predictedSolarPower * 24 * 30 / 1000) 

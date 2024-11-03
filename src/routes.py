@@ -1,19 +1,66 @@
+import os
 from typing import Optional
 from fastapi import APIRouter
 from pydantic import BaseModel
 from starlette.requests import Request
-from utils.crops import predict_crop_yield
+from utils.crops import predict_crop_yield, predict_crop_yield_spark
 from utils.owa import convert_kelvin_to_celsius, get_complete_weather
 from utils.wind import WeatherData, predict_power_wind
 from utils.solar import SolarPowerInput, predict_power_solar
 from utils.airq import predict_aqi, IncomingData
-import datetime
+from models_spark.crop_yield import SparkCropRecommender
+from pyspark.sql import SparkSession
+from dotenv import load_dotenv
+
+load_dotenv()
+
+addr = os.getenv('SPARK_BINDADDR')
+print("SPARK_BINDADDR:", addr)
+spark = SparkSession.builder \
+    .appName("CropRecommendation") \
+    .config("spark.driver.host", "localhost") \
+    .config("spark.driver.bindAddress", "localhost") \
+    .config("spark.executor.memory", "1g") \
+    .config("spark.driver.memory", "1g") \
+    .master("local[*]") \
+    .getOrCreate()
+    
+spark.sparkContext.setLogLevel("ERROR")
+
+recommender = SparkCropRecommender(spark)
+model_path = "spark_crop_recommender"
+recommender.load_model(model_path)
 
 router = APIRouter()
 
 @router.get("/health")
 async def health():
     return { "status": "ok" }
+
+@router.post("/crops_info_spark")
+async def crops(request: Request):
+    try:
+        body = await request.json()
+        data = get_complete_weather(body['lat'], body['lon'])
+        
+        result = predict_crop_yield_spark(
+            body['lat'], 
+            body['lon'], 
+            convert_kelvin_to_celsius(data['temperature_2_m_above_gnd']), 
+            data['relative_humidity_2_m_above_gnd'], 
+            data['total_precipitation_sfc'],
+            recommender=recommender
+        )
+        
+        if isinstance(result, dict) and "error" in result:
+            return result
+
+        return {
+            "data": result
+        }
+        
+    except Exception as e:
+        return {"error": f"API error: {str(e)}"}
 
 @router.post("/crops_info")
 async def crops(request: Request):
@@ -30,7 +77,7 @@ async def crops(request: Request):
         )
         
         if isinstance(result, dict) and "error" in result:
-            return result 
+            return result
 
         return {
             "data": result

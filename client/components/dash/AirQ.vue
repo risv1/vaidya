@@ -3,9 +3,11 @@ const loading = ref(true);
 const error = ref<string | null>(null);
 const aqi = ref<number | null>(null);
 
-const { locationData } = useLocation();
-const lat = locationData?.coords.latitude.toFixed(4) ?? '12.9';
-const lon = locationData?.coords.longitude.toFixed(4) ?? '80.2';
+// const lat = (12.9 + Math.random() * 0.1).toFixed(4);
+// const lon = (80.2 + Math.random() * 0.1).toFixed(4);
+
+const lat = 12.8230
+const lon = 80.0444
 
 const fetchAirQuality = async () => {
     try {

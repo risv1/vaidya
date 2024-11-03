@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
-
 type Disease = {
     name: string;
     description: string;
@@ -29,10 +27,11 @@ const cropRecommendations = ref<CropRecommendation[]>([]);
 const loading = ref(true);
 const error = ref<string | null>(null);
 
-const { locationData } = useLocation();
-const lat = locationData?.coords.latitude.toFixed(4) ?? '12.9';
-const lon = locationData?.coords.longitude.toFixed(4) ?? '80.2';
+// const lat = (12.9 + Math.random() * 0.1).toFixed(4);
+// const lon = (80.2 + Math.random() * 0.1).toFixed(4);
 
+const lat = 12.8230
+const lon = 80.0444
 
 const fetchCropData = async () => {
     loading.value = true;
@@ -43,7 +42,7 @@ const fetchCropData = async () => {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ 
+            body: JSON.stringify({
                 lat,
                 lon
             })
@@ -64,7 +63,7 @@ onMounted(() => {
 
 const getRisksForCrop = (crop: CropRecommendation) => {
     const risks = [];
-    
+
     risks.push(...crop.pests.map(pest => ({
         name: pest.name,
         condition: pest.description,
@@ -74,7 +73,7 @@ const getRisksForCrop = (crop: CropRecommendation) => {
         iconColor: 'text-red-500',
         statusClass: 'bg-red-500/10 text-red-500'
     })));
-    
+
     risks.push(...crop.diseases.map(disease => ({
         name: disease.name,
         condition: disease.description,
@@ -84,7 +83,7 @@ const getRisksForCrop = (crop: CropRecommendation) => {
         iconColor: 'text-yellow-500',
         statusClass: 'bg-yellow-500/10 text-yellow-500'
     })));
-    
+
     return risks;
 };
 </script>
@@ -93,11 +92,11 @@ const getRisksForCrop = (crop: CropRecommendation) => {
     <div v-if="loading" class="flex justify-center items-center min-h-screen">
         <div class="text-white">Loading crop data...</div>
     </div>
-    
+
     <div v-else-if="error" class="flex justify-center items-center min-h-screen">
         <div class="text-red-500">{{ error }}</div>
     </div>
-    
+
     <div v-else class="space-y-6 pb-5">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             <div class="p-6 bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl">
@@ -147,17 +146,19 @@ const getRisksForCrop = (crop: CropRecommendation) => {
                     </div>
                     <div class="ml-4">
                         <p class="text-sm font-medium text-gray-400">Best Price</p>
-                        <p class="text-2xl font-semibold text-white">₹{{ cropRecommendations[0]?.estimated_price.toFixed(2) }}</p>
+                        <p class="text-2xl font-semibold text-white">₹{{
+                            cropRecommendations[0]?.estimated_price.toFixed(2) }}</p>
                     </div>
                 </div>
             </div>
         </div>
 
         <div v-for="crop in cropRecommendations" :key="crop.crop" class="mb-8">
-            <h2 class="text-xl font-bold text-white mb-4">{{ crop.crop }} ({{ crop.confidence.toFixed(2) }}% Confidence)</h2>
+            <h2 class="text-xl font-bold text-white mb-4">{{ crop.crop }} ({{ crop.confidence.toFixed(2) }}% Confidence)
+            </h2>
             <h3 class="text-lg font-medium text-white mb-4">
                 Estimated Price: ₹{{ crop.estimated_price }}</h3>
-            
+
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="lg:col-span-1">
                     <div class="p-6 bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl">
