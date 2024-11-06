@@ -1,5 +1,4 @@
-import os
-from typing import Optional
+import random
 from fastapi import APIRouter
 from pydantic import BaseModel
 from starlette.requests import Request
@@ -10,12 +9,9 @@ from utils.solar import SolarPowerInput, predict_power_solar
 from utils.airq import predict_aqi, IncomingData
 from models_spark.crop_yield import SparkCropRecommender
 from pyspark.sql import SparkSession
-from dotenv import load_dotenv
+from services.spark_hive import insert_into_crops
+from services.schema import CropSchema
 
-load_dotenv()
-
-addr = os.getenv('SPARK_BINDADDR')
-print("SPARK_BINDADDR:", addr)
 spark = SparkSession.builder \
     .appName("CropRecommendation") \
     .config("spark.driver.host", "localhost") \
@@ -54,6 +50,28 @@ async def crops(request: Request):
         
         if isinstance(result, dict) and "error" in result:
             return result
+        
+        insert_crop = CropSchema(
+            id=random.randint(1, 1000) + random.randint(1, 1000),
+            lat=float(body['lat']),
+            lon=float(body['lon']),
+            crop=result['crop'],
+            N=float(result['N']),
+            P=float(result['P']),
+            K=float(result['K']),
+            pH=result['pH'],
+            rainfall=data['total_precipitation_sfc'],
+            temperature=convert_kelvin_to_celsius(data['temperature_2_m_above_gnd']),
+            humidity=data['relative_humidity_2_m_above_gnd'],
+            price=result['price'],
+            pests=result['pests'],
+            diseases=result['diseases']
+        )
+
+        try:
+            insert_into_crops(spark, insert_crop)
+        except Exception as e:
+            return {"error": f"Error inserting to table: {str(e)}"}
 
         return {
             "data": result

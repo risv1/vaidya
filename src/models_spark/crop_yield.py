@@ -186,11 +186,10 @@ def save_crop_stats(recommender, output_path):
     print("Crop stats saved successfully!")
 
 def main():
-    load_dotenv()
     spark = SparkSession.builder \
         .appName("CropRecommendation") \
-        .config("spark.driver.host", os.getenv('SPARK_BINDADDR')) \
-        .config("spark.driver.bindAddress", os.getenv('SPARK_BINDADDR')) \
+        .config("spark.driver.host", 'localhost') \
+        .config("spark.driver.bindAddress", "localhost") \
         .config("spark.executor.memory", "1g") \
         .config("spark.driver.memory", "1g") \
         .master("local[*]") \

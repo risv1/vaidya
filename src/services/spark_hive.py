@@ -1,5 +1,5 @@
 from pyspark.sql import SparkSession
-from schema import CropSchema, WindSchema, AQISchema, SolarSchema
+from .schema import CropSchema, WindSchema, AQISchema, SolarSchema
 
 spark = SparkSession.builder \
     .appName("Python Spark SQL basic example") \
@@ -48,7 +48,7 @@ def create_db_and_tables():
         rain_p_h DOUBLE,
         snow_p_h DOUBLE,
         traffic_volume DOUBLE,
-        aqi DOUBLE,
+        aqi DOUBLE
         ) 
         STORED AS PARQUET
     """)
@@ -97,41 +97,44 @@ def create_db_and_tables():
         windspeed_100m DOUBLE,
         wind_direction_10_m_above_gnd DOUBLE,
         winddirection_100m DOUBLE,
-        wind_gust_10_m_above_gnd DOUBLE,
-        timestamp STRING
+        wind_gust_10_m_above_gnd DOUBLE
         ) 
-        STORED AS PARQUET          
+        STORED AS PARQUET        
     """)
 
     spark.sql("SHOW TABLES IN test_db").show()
     
 def insert_into_crops(data: CropSchema):
     df = spark.createDataFrame([data.dict()])
-    insert = df.write.mode("append").saveAsTable("test_db.crops_table")
-    if insert:
+    try:
+        df.write.mode("append").saveAsTable("test_db.crops_table")
         return True
-    return False
+    except Exception as e:
+        return {"error": f"API error: {str(e)}"}
 
 def insert_into_aqi(data: AQISchema):
     df = spark.createDataFrame([data.dict()])
-    insert = df.write.mode("append").saveAsTable("test_db.aqi_table")
-    if insert:
+    try:
+        df.write.mode("append").saveAsTable("test_db.aqi_table")
         return True
-    return False
+    except Exception as e:
+        return {"error": f"API error: {str(e)}"}
 
 def insert_into_solar(data: SolarSchema):
     df = spark.createDataFrame([data.dict()])
-    insert = df.write.mode("append").saveAsTable("test_db.solar_table")
-    if insert:
+    try:
+        df.write.mode("append").saveAsTable("test_db.solar_table")
         return True
-    return False
+    except Exception as e:
+        return {"error": f"API error: {str(e)}"}
 
 def insert_into_wind(data: WindSchema):
     df = spark.createDataFrame([data.dict()])
-    insert = df.write.mode("append").saveAsTable("test_db.wind_table")
-    if insert:
+    try:
+        df.write.mode("append").saveAsTable("test_db.wind_table")
         return True
-    return False
+    except Exception as e:
+        return {"error": f"API error: {str(e)}"}
 
 def read_from_crops():
     df = spark.sql("SELECT * FROM test_db.crops_table")
@@ -151,3 +154,6 @@ def read_from_wind():
 
 def close_spark():
     spark.stop()
+    
+if __name__ == "__main__":
+    read_from_crops()
