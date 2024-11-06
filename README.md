@@ -13,12 +13,14 @@ This project, developed as part of our DOA coursework, focuses on analyzing weat
 
 ## Stack
 
+#### Tools
+
 - FastAPI
 - Nuxt
 - PyTorch
 - Scikit-Learn
 
-### WIP Integration
+#### Services
 
-- HDFS
-- RabbitMQ
+- Hive
+- Spark

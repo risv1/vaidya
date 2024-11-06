@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { fetchCropData, loading, error, cropRecommendations } from '~/utils/crops';
 
 type Disease = {
     name: string;
@@ -25,46 +25,16 @@ type CropRecommendation = {
     diseases: Disease[];
 }
 
-const cropRecommendations = ref<CropRecommendation[]>([]);
-const loading = ref(true);
-const error = ref<string | null>(null);
 
-const { locationData } = useLocation();
-const lat = locationData?.coords.latitude.toFixed(4) ?? '12.9';
-const lon = locationData?.coords.longitude.toFixed(4) ?? '80.2';
-
-
-const fetchCropData = async () => {
-    loading.value = true;
-    error.value = null;
-    try {
-        const response = await fetch('http://localhost:8000/crops_info', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ 
-                lat,
-                lon
-            })
-        });
-        const data = await response.json();
-        cropRecommendations.value = data.data;
-    } catch (err) {
-        error.value = 'Failed to fetch crop data. Please try again later.';
-        console.error('Error fetching crop data:', err);
-    } finally {
-        loading.value = false;
-    }
-};
+const { coords } = useLocation()
 
 onMounted(() => {
-    fetchCropData();
+    fetchCropData(coords);
 });
 
 const getRisksForCrop = (crop: CropRecommendation) => {
     const risks = [];
-    
+
     risks.push(...crop.pests.map(pest => ({
         name: pest.name,
         condition: pest.description,
@@ -74,7 +44,7 @@ const getRisksForCrop = (crop: CropRecommendation) => {
         iconColor: 'text-red-500',
         statusClass: 'bg-red-500/10 text-red-500'
     })));
-    
+
     risks.push(...crop.diseases.map(disease => ({
         name: disease.name,
         condition: disease.description,
@@ -84,7 +54,7 @@ const getRisksForCrop = (crop: CropRecommendation) => {
         iconColor: 'text-yellow-500',
         statusClass: 'bg-yellow-500/10 text-yellow-500'
     })));
-    
+
     return risks;
 };
 </script>
@@ -93,11 +63,11 @@ const getRisksForCrop = (crop: CropRecommendation) => {
     <div v-if="loading" class="flex justify-center items-center min-h-screen">
         <div class="text-white">Loading crop data...</div>
     </div>
-    
+
     <div v-else-if="error" class="flex justify-center items-center min-h-screen">
         <div class="text-red-500">{{ error }}</div>
     </div>
-    
+
     <div v-else class="space-y-6 pb-5">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             <div class="p-6 bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl">
@@ -113,7 +83,7 @@ const getRisksForCrop = (crop: CropRecommendation) => {
                     </div>
                     <div class="ml-4">
                         <p class="text-sm font-medium text-gray-400">Location</p>
-                        <p class="text-2xl font-semibold text-white">{{ lat }}, {{ lon }}</p>
+                        <p class="text-2xl font-semibold text-white">{{ coords.lat }}, {{ coords.lon }}</p>
                     </div>
                 </div>
             </div>
@@ -147,17 +117,19 @@ const getRisksForCrop = (crop: CropRecommendation) => {
                     </div>
                     <div class="ml-4">
                         <p class="text-sm font-medium text-gray-400">Best Price</p>
-                        <p class="text-2xl font-semibold text-white">₹{{ cropRecommendations[0]?.estimated_price.toFixed(2) }}</p>
+                        <p class="text-2xl font-semibold text-white">₹{{
+                            cropRecommendations[0]?.estimated_price.toFixed(2) }}</p>
                     </div>
                 </div>
             </div>
         </div>
 
         <div v-for="crop in cropRecommendations" :key="crop.crop" class="mb-8">
-            <h2 class="text-xl font-bold text-white mb-4">{{ crop.crop }} ({{ crop.confidence.toFixed(2) }}% Confidence)</h2>
+            <h2 class="text-xl font-bold text-white mb-4">{{ crop.crop }} ({{ crop.confidence.toFixed(2) }}% Confidence)
+            </h2>
             <h3 class="text-lg font-medium text-white mb-4">
                 Estimated Price: ₹{{ crop.estimated_price }}</h3>
-            
+
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="lg:col-span-1">
                     <div class="p-6 bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl">

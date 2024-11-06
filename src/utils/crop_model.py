@@ -5,7 +5,7 @@ import pandas as pd
 from sklearn.preprocessing import StandardScaler, LabelEncoder
 import json
 
-df = pd.read_csv('./data/indiancrop_dataset.csv')
+df = pd.read_csv('src/data/indiancrop_dataset.csv')
 
 class CropRecommendationModel(nn.Module):
     def __init__(self, input_size, hidden_size, num_crops):
@@ -99,4 +99,3 @@ class CropRecommender:
                 })
             
         return recommendations
-    

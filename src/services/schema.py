@@ -1,0 +1,76 @@
+from pydantic import BaseModel
+
+class CropSchema(BaseModel):
+    id: int
+    lat: float
+    lon: float
+    crop: str
+    N: float
+    P: float
+    K: float
+    pH: float
+    rainfall: float
+    temperature: float
+    humidity: float
+    price: float
+    pests: list
+    diseases: list
+    
+class AQISchema(BaseModel):
+    id: int
+    lat: float
+    lon: float
+    humidity: float
+    wind_speed: float
+    wind_direction: float
+    dew_point: float
+    temperature: float
+    clouds_all: float
+    visibility_in_miles: float
+    rain_p_h: float
+    snow_p_h: float
+    traffic_volume: float
+    aqi: float
+
+class SolarSchema(BaseModel):
+    id: int
+    lat: float
+    lon: float
+    power: float
+    temperature_2_m_above_gnd: float
+    relative_humidity_2_m_above_gnd: float
+    dewpoint_2m: float
+    mean_sea_level_pressure_MSL: float
+    total_precipitation_sfc: float
+    snowfall_amount_sfc: float
+    total_cloud_cover_sfc: float
+    high_cloud_cover_high_cld_lay: float
+    medium_cloud_cover_mid_cld_lay: float
+    low_cloud_cover_low_cld_lay: float
+    shortwave_radiation_backwards_sfc: float
+    wind_speed_10_m_above_gnd: float
+    wind_direction_10_m_above_gnd: float
+    wind_speed_80_m_above_gnd: float
+    wind_direction_80_m_above_gnd: float
+    wind_speed_900_mb: float
+    wind_direction_900_mb: float
+    wind_gust_10_m_above_gnd: float
+    angle_of_incidence: float
+    zenith: float
+    azimuth: float
+
+    
+class WindSchema(BaseModel):
+    id: int
+    lat: float
+    lon: float
+    power: float
+    temperature_2_m_above_gnd: float
+    relative_humidity_2_m_above_gnd: float
+    dewpoint_2m: float
+    wind_speed_10_m_above_gnd: float
+    windspeed_100m: float
+    wind_direction_10_m_above_gnd: float
+    winddirection_100m: float
+    wind_gust_10_m_above_gnd: float
+    timestamp: str

@@ -1,4 +1,7 @@
-<script setup>
+<script setup lang="ts">
+import { fetchAirQuality } from '~/utils/air-quality';
+import { fetchCropData } from '~/utils/crops';
+import { fetchPowerData } from '~/utils/power';
 
 const tabs = [
     { id: 'crops', name: 'Crop Analysis' },
@@ -7,14 +10,7 @@ const tabs = [
 ]
 
 const currentTab = ref('crops')
-const isDropdownOpen = ref(false)
 const isNotifsOpen = ref(false)
-
-const userNavigation = [
-    { name: 'Your Profile', icon: "mdi:user" },
-    { name: 'Settings', icon: "mi:settings" },
-    { name: 'Sign out', icon: "material-symbols:logout" }
-]
 
 const notifications = ref([
     {
@@ -30,6 +26,21 @@ const notifications = ref([
         time: '3h ago'
     }
 ])
+
+const { coords }  = useLocation()
+
+const submitLatLon = (lat: number, lon: number) => {
+    coords.value = { lat, lon }
+    if (currentTab.value === 'energy') {
+        fetchPowerData(coords)
+    } else if (currentTab.value === 'health') {
+        fetchAirQuality(coords)
+    } else if (currentTab.value === 'crops') {
+        fetchCropData(coords)
+    } else {
+        console.error('Invalid tab')
+    }
+}
 </script>
 
 <template>
@@ -82,24 +93,7 @@ const notifications = ref([
                                     </div>
                                 </div>
                             </div>
-                            <div class="relative ml-3">
-                                <button @click="isDropdownOpen = !isDropdownOpen"
-                                    class="flex items-center space-x-2 p-2 text-gray-400 hover:text-white rounded-lg hover:bg-white/10">
-                                    <span class="h-8 w-8 rounded-full bg-gradient-to-r from-sky-500 to-blue-600"></span>
-                                    <Icon name="mdi:chevron-down" class="h-4 w-4" />
-                                </button>
-
-                                <div v-if="isDropdownOpen"
-                                    class="absolute right-0 mt-2 w-48 rounded-lg bg-white/10 backdrop-blur-xl shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                                    <div class="py-1">
-                                        <a v-for="item in userNavigation" :key="item.name" href="#"
-                                            class="flex items-center px-4 py-2 text-sm text-gray-300 hover:bg-white/10">
-                                            <Icon :name="item.icon" class="h-4 w-4 mr-2" />
-                                            {{ item.name }}
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
+                            <MiscSetLocation :submit-handler="submitLatLon" />
                         </div>
                     </div>
                 </div>
