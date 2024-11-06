@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { fetchCropData, loading, error, cropRecommendations } from '~/utils/crops';
+
 type Disease = {
     name: string;
     description: string;
@@ -23,42 +25,11 @@ type CropRecommendation = {
     diseases: Disease[];
 }
 
-const cropRecommendations = ref<CropRecommendation[]>([]);
-const loading = ref(true);
-const error = ref<string | null>(null);
 
-// const lat = (12.9 + Math.random() * 0.1).toFixed(4);
-// const lon = (80.2 + Math.random() * 0.1).toFixed(4);
-
-const lat = 12.8230
-const lon = 80.0444
-
-const fetchCropData = async () => {
-    loading.value = true;
-    error.value = null;
-    try {
-        const response = await fetch('http://localhost:8000/crops_info', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                lat,
-                lon
-            })
-        });
-        const data = await response.json();
-        cropRecommendations.value = data.data;
-    } catch (err) {
-        error.value = 'Failed to fetch crop data. Please try again later.';
-        console.error('Error fetching crop data:', err);
-    } finally {
-        loading.value = false;
-    }
-};
+const { coords } = useLocation()
 
 onMounted(() => {
-    fetchCropData();
+    fetchCropData(coords);
 });
 
 const getRisksForCrop = (crop: CropRecommendation) => {
@@ -112,7 +83,7 @@ const getRisksForCrop = (crop: CropRecommendation) => {
                     </div>
                     <div class="ml-4">
                         <p class="text-sm font-medium text-gray-400">Location</p>
-                        <p class="text-2xl font-semibold text-white">{{ lat }}, {{ lon }}</p>
+                        <p class="text-2xl font-semibold text-white">{{ coords.lat }}, {{ coords.lon }}</p>
                     </div>
                 </div>
             </div>
